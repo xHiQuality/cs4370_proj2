@@ -1,0 +1,25 @@
+Download ConnectorJ from this link https://dev.mysql.com/downloads/connector/j/
+
+extract folder into the same folder as CS4370_PROJ2 (not INSIDE of it but same dir as it.)
+
+Always include the mysql-connector-j-9.0.0 in the compile & run path
+if mysql-connector-j.9.0.0 is in folder with CS4370_PROJ2, compile command for test file should be:
+
+Before trying to compile make sure that the database is set up and that you have changed 
+the jdbc, username, and password variables in MySQLConnector.java to match your Workbench config.
+
+Note that we may have different username &/ password, so always double check when pulling from main that it matches your database.
+You also need to turn on your database. In workbench, go to Database tab -> Connect to Database -> then go to server tab (Server -> Server Status), ensure server is running.
+
+
+Proceed once above is complete:
+
+Compile:
+
+javac -cp ..\mysql-connector-j.9.0.0\mysql-connector-j-9.0.0.jar .\src\MySQLConnector.java (from cd path\to\cs4370_proj2) (mac may have \ flipped to / can't remember)
+
+Run:
+
+java -cp ..\mysql-connector-j.9.0.0\mysql-connector-j-9.0.0.jar .\src\MySQLConnector.java
+
+Output should be "Connection successful!"
