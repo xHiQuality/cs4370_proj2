@@ -2,7 +2,7 @@ Download ConnectorJ from this link https://dev.mysql.com/downloads/connector/j/
 
 extract folder into the same folder as CS4370_PROJ2 (not INSIDE of it but same dir as it.)
 
-Always include the mysql-connector-j-9.0.0 in the compile & run path
+Always include the mysql-connector-j-9.0.0.jar in the compile & run path
 if mysql-connector-j.9.0.0 is in folder with CS4370_PROJ2, compile command for test file should be:
 
 Before trying to compile make sure that the database is set up and that you have changed 
