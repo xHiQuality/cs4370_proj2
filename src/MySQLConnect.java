@@ -10,6 +10,7 @@ public class MySQLConnect {
 
         try {
             Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+            
             System.out.println("Connection successful!");
         } catch (SQLException e) {
             e.printStackTrace();
