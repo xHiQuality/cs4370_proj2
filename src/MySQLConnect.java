@@ -6,7 +6,7 @@ public class MySQLConnect {
     public static void main(String[] args) {
         String jdbcUrl = "jdbc:mysql://localhost:3306/employees"; // Replace with your DB name
         String username = "root"; // Replace with your MySQL username
-        String password = "admin"; // Replace with your MySQL password
+        String password = "bigT3CHZ0N3"; // Replace with your MySQL password
 
         try {
             Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
