@@ -1,5 +1,5 @@
 select
-	e.empl_no,
+	e.emp_no,
     e.birth_date,
     e.first_name,
     e.last_name,
