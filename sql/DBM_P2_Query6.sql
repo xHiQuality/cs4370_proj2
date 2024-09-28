@@ -41,4 +41,5 @@ ON
 WHERE 
     E1.emp_no_colleague <> 13141 
     AND E2.emp_no_colleague <> 13111
-    AND E1.department <> E2.department;
+    AND E1.department <> E2.department
+LIMIT 100;
