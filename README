@@ -1,0 +1,7 @@
+Compile:
+
+javac -d bin -cp .\mysql-connector-j.9.0.0\mysql-connector-j-9.0.0.jar .\src\QueryDriver.java (from cd path\to\cs4370_proj2)
+
+Run:
+
+java -cp .\mysql-connector-j.9.0.0\mysql-connector-j-9.0.0.jar .\src\QueryDriver.java
