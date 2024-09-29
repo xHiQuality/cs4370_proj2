@@ -1,6 +1,9 @@
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +20,8 @@ public class QueryDriver {
 
         Scanner in = new Scanner(System.in);
         
-            while (true) {
+                while(true) {
+                
                 System.out.println("\n\nSelect query to run: ");
                 System.out.println("1. List department(s) with maximum ratio of average female salaries to average men salaries");
                 System.out.println("2. List manager(s) who holds office for the longest duration. A person can be a manager for multiple departments at different time frames");
@@ -27,10 +31,12 @@ public class QueryDriver {
                 System.out.println("6. Find 2 degrees of separation between 2 given employees E1 & E2");
                 System.out.println("0. QUIT\n\n");
                 System.out.print("Enter # of query you would like to execute: ");
-                try {
-                    int queryNum = in.nextInt();
+
+                int queryNum = in.nextInt();
+                in.nextLine();
+                    //in.nextLine();
                     if (queryNum == 0) {
-                        break;
+                       break;
                     } else if(queryNum == 1) {
                         System.out.println();
                         executeQuery1(jdbcUrl,username,password);
@@ -42,54 +48,175 @@ public class QueryDriver {
                     } else if (queryNum == 4) {
                         System.out.println("\nSean query 4");
                     } else if (queryNum == 5) {
-                        Boolean askAgain = true;
-                        while(askAgain) {
-                            try {
-                                System.out.print("\nEnter Employee 1 ID: "); //test case 10009
-                                int E1 = in.nextInt();
-                                System.out.print("\nEnter Employee 2 ID: "); //test case 11545
-                                int E2 = in.nextInt();
-                                System.out.println();
-                                if (E1 == E2) {
-                                    System.out.println("Same employee. Enter 2 different ID's");
-                                } else {
-                                    OneDegree(E1, E2, jdbcUrl, username, password);
-                                    askAgain = false;
+                        
+                                while (true) {
+                                System.out.print("\nEnter Employee 1 Full Name: "); // test case Sumant Peac, same name test case Aimee Brookner multiple ID
+
+                                String[] E1Name = in.nextLine().split(" ");
+                                if (E1Name.length < 2) System.out.println("Please Enter First and Last Name");
+                                else {
+                                        String E1FN = E1Name[0];
+                                        String E1LN = E1Name[1];
+                                    
+                                    int E1ID = searchByName(E1FN, E1LN, jdbcUrl, username, password,in);
+                                    if (E1ID > 1) {
+                                        System.out.print("\nEnter Employee 2 Full Name: "); //test case Bartek Lieblein
+                                        String[] E2Name = in.nextLine().split(" ");
+                                        if (E2Name.length < 2) System.out.println("Please Enter First and Last Name");
+                                        else {
+                                            String E2FN = E2Name[0];
+                                            String E2LN = E2Name[1];
+
+                                            int E2ID = searchByName(E2FN, E2LN, jdbcUrl, username, password,in);
+
+                                            if (E1ID == E2ID) {
+                                                System.out.println("Same employee. Enter 2 different IDs.");
+                                            } else {
+                                                OneDegree(E1ID, E2ID, jdbcUrl, username, password);
+                                                break; 
+                                            }   
+                                        }
+                                        
+                                    }
                                 }
-                                }catch(Exception e) {
-                                    System.out.println("Please enter valid ID e.g.(10009,11545,etc.)");
-                                    in.next();
-                                }
-                        }
+                            }
                     } else if (queryNum == 6) {
-                        Boolean askAgain = true;
-                        while(askAgain) {
-                            try {
-                                System.out.print("\nEnter Employee 1 ID: "); //test case 13141
-                                int E1 = in.nextInt();
-                                System.out.print("\nEnter Employee 2 ID: "); //test case 13111
-                                int E2 = in.nextInt();
-                                System.out.println();
-                                if (E1 == E2) {
-                                    System.out.println("Same employee. Enter 2 different ID's");
-                                } else {
-                                    TwoDegrees(E1, E2, jdbcUrl, username, password);
-                                    askAgain = false;
-                                }
+                        while (true) {
+                            System.out.print("\nEnter Employee 1 Full Name: "); // test case Guther Holburn
+
+                            String[] E1Name = in.nextLine().split(" ");
+                            if (E1Name.length < 2) System.out.println("Please Enter First and Last Name");
+                            else {
+                                    String E1FN = E1Name[0];
+                                    String E1LN = E1Name[1];
                                 
-                                }catch(Exception e) {
-                                    System.out.println("Please enter valid ID e.g.(13141,13111,etc.)");
-                                    in.next();
+                                int E1ID = searchByName(E1FN, E1LN, jdbcUrl, username, password,in);
+                                if (E1ID > 1) {
+                                    System.out.print("\nEnter Employee 2 Full Name: "); //test case Anwar Krybus
+                                    String[] E2Name = in.nextLine().split(" ");
+                                    if (E2Name.length < 2) System.out.println("Please Enter First and Last Name");
+                                    else {
+                                        String E2FN = E2Name[0];
+                                        String E2LN = E2Name[1];
+
+                                        int E2ID = searchByName(E2FN, E2LN, jdbcUrl, username, password,in);
+
+                                        if (E1ID == E2ID) {
+                                            System.out.println("Same employee. Enter 2 different IDs.");
+                                        } else {
+                                            TwoDegrees(E1ID, E2ID, jdbcUrl, username, password);
+                                            break; 
+                                        }   
+                                    }
                                 }
+                            }
                         }
                     }
-                } catch(Exception e) {
-                    System.out.println("\nIncorrect Usage, please enter # e.g(1,2,3,etc.)");
-                    in.next();
-                }
+                   
         }
         in.close();
     }
+
+    /**
+     * This searches the database by calling a simple select query, then adds all employees to list with
+     * same name, if only one returns the id, if none returns -1
+     * @author Cason Pittman
+     * @param fn First name
+     * @param ln Last name
+     * @param url jdbc url
+     * @param user username of connection
+     * @param pass password of connection
+     * @param in2  Input scanner from keyboard
+     * @return emp_no of selected person
+     */
+    private static int searchByName(String fn, String ln, String url, String user, String pass, Scanner in2) {
+       
+
+        try(Connection connection = DriverManager.getConnection(url, user, pass)) {
+            String query = "SELECT emp_no, first_name, last_name FROM employees WHERE first_name = ? AND last_Name = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, fn);
+            preparedStatement.setString(2, ln);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            //add employees to list that match fistName lastName constraint
+            List<Employee> employees = new ArrayList<>();
+            while (rs.next()) {
+                int emp_no = rs.getInt("emp_no");
+                String first = rs.getString("first_name");
+                String last = rs.getString("last_name");
+
+                employees.add(new Employee(emp_no, first, last));
+
+            }
+
+            if (employees.isEmpty()) {
+                System.out.println("No employees found with first and last name combination.");
+                
+                return -1;
+            }
+            //these two check for employees in list
+            if (employees.size() > 1) { //test case Aimee Brookner
+                System.out.println("Please choose the employee desired by ID.");
+                for (Employee e: employees) {
+                    System.out.println("ID: " + e.getEmpNo() + " - Name: " + e.getFirstName() + " " + e.getLastName());
+                }  
+                //enter specific ID of name requested
+                System.out.print("Enter ID: ");
+                int eId = in2.nextInt();
+                in2.nextLine();
+                //if ID is in list assign ID, else return null
+                Employee selected = employees.stream().filter(e -> e.getEmpNo() == eId).findFirst().orElse(null);
+                
+                if (selected == null) {
+                    System.out.println("No ID found from list of employees");
+                   
+                    return -1;
+                }
+                //System.out.println(selected.getEmpNo() + " " + selected.getFirstName() + " " + selected.getLastName());
+                return selected.getEmpNo();
+            } else {
+                Employee selected = employees.get(0);
+                
+                //System.out.println(selected.getEmpNo() + " " + selected.getFirstName() + " " + selected.getLastName());
+                return selected.getEmpNo();
+            }
+        
+        } catch (Exception e) {
+            System.out.println("Incorrect ID or Names given. Try again");
+        }
+        return -1;
+    }
+
+    /**
+     * @author Cason Pittman
+     * Structure for retrieving Employees from database.
+     */
+    static class Employee {
+        private int empNo;
+        private String firstName;
+        private String lastName;
+
+        public Employee(int empNo, String firstName, String lastName) {
+            this.empNo = empNo;
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+        public int getEmpNo() {
+            return empNo;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+    }
+
 
     /**
      *  This method prints out a table that corresponds to the query listed below.
