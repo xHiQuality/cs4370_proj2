@@ -88,6 +88,7 @@ public class QueryDriver {
                     in.next();
                 }
         }
+        in.close();
     }
 
     /**
