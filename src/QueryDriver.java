@@ -13,6 +13,13 @@ public class QueryDriver {
         String jdbcUrl = "jdbc:mysql://localhost:3306/employees"; // Replace with your DB name
         String username = "root"; // Cason = "root"
         String password = "admin"; // Cason = "admin"
+        
+        // try {
+        // Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+        // System.out.println("Connection successful!");
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
 
         /**
          * CREATE THE CMD LINE LOGIC FOR INPUT AND QUERY SELECTION
