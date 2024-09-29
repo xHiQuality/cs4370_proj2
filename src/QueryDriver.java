@@ -159,7 +159,7 @@ public class QueryDriver {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
     }
 }
