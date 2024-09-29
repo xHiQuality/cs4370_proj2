@@ -5,49 +5,66 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
     public class MySQLConnect {
+    /**
+     * @author Samantha Macaluso
+     */
         public static void main(String[] args) {
             String url = "jdbc:mysql://localhost:3306/employees";  // Update with your DB URL
             String user = "root";  // Update with your DB username
             String password = "Sm25229!";  // Update with your DB password
 
-            try {
-                // Establish a database connection
-                Connection connection = DriverManager.getConnection(url, user, password);
+            try (Connection connection = DriverManager.getConnection(url, user, password)) {
                 System.out.println("Connection successful!");
-
-                String query1 = "select\n" +
-                        "\tdept_no,\n" +
-                        "    dept_name,\n" +
-                        "    (avg_female_salary / avg_male_salary) as \"salary_ratio_female_to_male\"\n" +
-                        "from\n" +
-                        "\t(\n" +
-                        "\t\tselect\n" +
-                        "        d.dept_no,\n" +
-                        "        d.dept_name,\n" +
-                        "        (\n" +
-                        "\t\t\tselect avg(salary)\n" +
-                        "\t\t\tfrom employees.salaries s \n" +
-                        "\t\t\t\tinner join employees.employees e on e.emp_no = s.emp_no\n" +
-                        "\t\t\t\tinner join employees.dept_emp de on de.emp_no = e.emp_no and de.dept_no = d.dept_no\n" +
-                        "\t\t\twhere e.gender = 'F'\n" +
-                        "\t\t\tgroup by de.dept_no\n" +
-                        "\t\t) AS \"avg_female_salary\",\n" +
-                        "\t\t(\n" +
-                        "\t\t\tselect avg(salary)\n" +
-                        "\t\t\tfrom employees.salaries s\n" +
-                        "\t\t\t\tinner join employees.employees e on e.emp_no = s.emp_no\n" +
-                        "\t\t\t\tinner join employees.dept_emp de on de.emp_no = e.emp_no and de.dept_no = d.dept_no\n" +
-                        "\t\t\twhere e.gender = 'M'\n" +
-                        "\t\t\tgroup by de.dept_no\n" +
-                        "\t\t) AS \"avg_male_salary\"\n" +
-                        "\tfrom\n" +
-                        "\t\temployees.departments d\n" +
-                        ")t1\n" +
-                        "\torder by\n" +
-                        "\t\tsalary_ratio_female_to_male desc\n" +
-                        "\tlimit 1";
-                PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
-                ResultSet resultSet1 = preparedStatement1.executeQuery();
+                executeQuery1(connection);
+                executeQuery2(connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+/**
+     *  This method prints out a table that corresponds to the query listed below.
+     *  This method corresponds with Q1 on the project assignment
+     * 
+     * @author Samantha Macaluso
+     * @param url jdbcUrl for connection
+     * @param user MySQL database user
+     * @param pass MySQL databse password
+     */
+        private static void executeQuery1(Connection connection) throws SQLException {
+            String query1 = "SELECT\n" +
+                    "\tdept_no,\n" +
+                    "    dept_name,\n" +
+                    "    (avg_female_salary / avg_male_salary) AS \"salary_ratio_female_to_male\"\n" +
+                    "FROM\n" +
+                    "\t(\n" +
+                    "\t\tSELECT\n" +
+                    "        d.dept_no,\n" +
+                    "        d.dept_name,\n" +
+                    "        (\n" +
+                    "\t\t\tSELECT AVG(salary)\n" +
+                    "\t\t\tFROM employees.salaries s \n" +
+                    "\t\t\t\tINNER JOIN employees.employees e ON e.emp_no = s.emp_no\n" +
+                    "\t\t\t\tINNER JOIN employees.dept_emp de ON de.emp_no = e.emp_no AND de.dept_no = d.dept_no\n" +
+                    "\t\t\tWHERE e.gender = 'F'\n" +
+                    "\t\t\tGROUP BY de.dept_no\n" +
+                    "\t\t) AS \"avg_female_salary\",\n" +
+                    "\t\t(\n" +
+                    "\t\t\tSELECT AVG(salary)\n" +
+                    "\t\t\tFROM employees.salaries s\n" +
+                    "\t\t\t\tINNER JOIN employees.employees e ON e.emp_no = s.emp_no\n" +
+                    "\t\t\t\tINNER JOIN employees.dept_emp de ON de.emp_no = e.emp_no AND de.dept_no = d.dept_no\n" +
+                    "\t\t\tWHERE e.gender = 'M'\n" +
+                    "\t\t\tGROUP BY de.dept_no\n" +
+                    "\t\t) AS \"avg_male_salary\"\n" +
+                    "\tFROM\n" +
+                    "\t\temployees.departments d\n" +
+                    ") t1\n" +
+                    "\tORDER BY\n" +
+                    "\t\tsalary_ratio_female_to_male DESC\n" +
+                    "\tLIMIT 1";
+            
+            try (PreparedStatement preparedStatement1 = connection.prepareStatement(query1);
+                        ResultSet resultSet1 = preparedStatement1.executeQuery()) {
 
                 System.out.println("Query 1:");
                 if (resultSet1.next()) {
@@ -59,25 +76,34 @@ import java.sql.SQLException;
                     System.out.println("Department Name: " + deptName);
                     System.out.println("Female to Male Salary Ratio: " + salaryRatio);
                 }
-                resultSet1.close();
-                preparedStatement1.close();
-                String query2 = "select\n" +
-                        "\te.emp_no,\n" +
-                        "    e.birth_date,\n" +
-                        "    e.first_name,\n" +
-                        "    e.last_name,\n" +
-                        "    e.gender,\n" +
-                        "    e.hire_date,\n" +
-                        "    max(((case when m.to_date= '9999-01-01' THEN current_date() ELSE m.to_date END) - m.from_date)) as \"max_manager_tenure\"\n" +
-                        "from\n" +
-                        "\temployees.employees e\n" +
-                        "\t\tinner join employees.dept_manager m on e.emp_no = m.emp_no\n" +
-                        "group by\n" +
-                        "\te.emp_no\n" +
-                        "order by\n" +
-                        "\tmax_manager_tenure desc";
-                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
-                ResultSet resultSet2 = preparedStatement2.executeQuery();
+            }
+        }
+        /*  This method prints out a table that corresponds to the query listed below.
+        *  This method corresponds with Q2 on the project assignment
+        * @author Samantha Macaluso
+        * @param url jdbcUrl for connection
+        * @param user MySQL database user
+        * @param pass MySQL databse password
+        */
+        private static void executeQuery2(Connection connection) throws SQLException {
+            String query2 = "SELECT\n" +
+                    "\te.emp_no,\n" +
+                    "    e.birth_date,\n" +
+                    "    e.first_name,\n" +
+                    "    e.last_name,\n" +
+                    "    e.gender,\n" +
+                    "    e.hire_date,\n" +
+                    "    MAX(((CASE WHEN m.to_date = '9999-01-01' THEN CURRENT_DATE() ELSE m.to_date END) - m.from_date)) AS \"max_manager_tenure\"\n" +
+                    "FROM\n" +
+                    "\temployees.employees e\n" +
+                    "\tINNER JOIN employees.dept_manager m ON e.emp_no = m.emp_no\n" +
+                    "GROUP BY\n" +
+                    "\te.emp_no\n" +
+                    "ORDER BY\n" +
+                    "\tmax_manager_tenure DESC";
+
+            try (PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                    ResultSet resultSet2 = preparedStatement2.executeQuery()) {
 
                 System.out.println("Query 2:");
                 if (resultSet2.next()) {
@@ -97,11 +123,7 @@ import java.sql.SQLException;
                     System.out.println("Hire Date: " + hireDate);
                     System.out.println("Max Manager Tenure: " + maxTenure + " days");
                 }
-                resultSet2.close();
-                preparedStatement2.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
-}
+    }
+
