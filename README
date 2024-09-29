@@ -1,3 +1,8 @@
+Created by: Cason Pittman, Sean Malavet, Sam Macaluso
+
+Database Access Info: In main, the first 3 lines are the url, username, and password for your
+local MySQL server. Replace these with your respective inputs.
+
 Compile:
 
 javac -d bin -cp .\mysql-connector-j.9.0.0\mysql-connector-j-9.0.0.jar .\src\QueryDriver.java (from cd path\to\cs4370_proj2)
