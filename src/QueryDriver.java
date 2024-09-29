@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Scanner;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -14,19 +15,79 @@ public class QueryDriver {
         String username = "root"; // Cason = "root"
         String password = "admin"; // Cason = "admin"
 
-        /**
-         * CREATE THE CMD LINE LOGIC FOR INPUT AND QUERY SELECTION
-         */
-
-        //Turn these into keyboard input
-        int empNoD1 = 13141;
-        int empNoD2 = 13111;
-        int E1 = 10009;
-        int E2 = 11545;
-        OneDegree(E1,E2,jdbcUrl,username,password);
-        TwoDegrees(empNoD1, empNoD2, jdbcUrl, username, password); //Query 6
-        executeQuery1(jdbcUrl, username, password);
-        executeQuery2(jdbcUrl, username, password);
+        Scanner in = new Scanner(System.in);
+        
+            while (true) {
+                System.out.println("\n\nSelect query to run: ");
+                System.out.println("1. List department(s) with maximum ratio of average female salaries to average men salaries");
+                System.out.println("2. List manager(s) who holds office for the longest duration. A person can be a manager for multiple departments at different time frames");
+                System.out.println("3. For each department, list number of employees born in each decade and their average salaries");
+                System.out.println("4. List employees, who are female, born before Jan 1, 1990, makes more than 80K annually and hold a manager postion");
+                System.out.println("5. Find 1 degree of separation between 2 given employees E1 & E2");
+                System.out.println("6. Find 2 degrees of separation between 2 given employees E1 & E2");
+                System.out.println("0. QUIT\n\n");
+                System.out.print("Enter # of query you would like to execute: ");
+                try {
+                    int queryNum = in.nextInt();
+                    if (queryNum == 0) {
+                        break;
+                    } else if(queryNum == 1) {
+                        System.out.println();
+                        executeQuery1(jdbcUrl,username,password);
+                    } else if (queryNum == 2) {
+                        System.out.println();
+                        executeQuery2(jdbcUrl,username,password);
+                    } else if (queryNum == 3) {
+                        System.out.println("\nSean query 3");
+                    } else if (queryNum == 4) {
+                        System.out.println("\nSean query 4");
+                    } else if (queryNum == 5) {
+                        Boolean askAgain = true;
+                        while(askAgain) {
+                            try {
+                                System.out.print("\nEnter Employee 1 ID: "); //test case 10009
+                                int E1 = in.nextInt();
+                                System.out.print("\nEnter Employee 2 ID: "); //test case 11545
+                                int E2 = in.nextInt();
+                                System.out.println();
+                                if (E1 == E2) {
+                                    System.out.println("Same employee. Enter 2 different ID's");
+                                } else {
+                                    OneDegree(E1, E2, jdbcUrl, username, password);
+                                    askAgain = false;
+                                }
+                                }catch(Exception e) {
+                                    System.out.println("Please enter valid ID e.g.(10009,11545,etc.)");
+                                    in.next();
+                                }
+                        }
+                    } else if (queryNum == 6) {
+                        Boolean askAgain = true;
+                        while(askAgain) {
+                            try {
+                                System.out.print("\nEnter Employee 1 ID: "); //test case 13141
+                                int E1 = in.nextInt();
+                                System.out.print("\nEnter Employee 2 ID: "); //test case 13111
+                                int E2 = in.nextInt();
+                                System.out.println();
+                                if (E1 == E2) {
+                                    System.out.println("Same employee. Enter 2 different ID's");
+                                } else {
+                                    TwoDegrees(E1, E2, jdbcUrl, username, password);
+                                    askAgain = false;
+                                }
+                                
+                                }catch(Exception e) {
+                                    System.out.println("Please enter valid ID e.g.(13141,13111,etc.)");
+                                    in.next();
+                                }
+                        }
+                    }
+                } catch(Exception e) {
+                    System.out.println("\nIncorrect Usage, please enter # e.g(1,2,3,etc.)");
+                    in.next();
+                }
+        }
     }
 
     /**
