@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -44,7 +45,7 @@ public class QueryDriver {
                         System.out.println();
                         executeQuery2(jdbcUrl,username,password);
                     } else if (queryNum == 3) {
-                        System.out.println("\nSean query 3");
+                        executeQuery3(jdbcUrl,username,password);
                     } else if (queryNum == 4) {
                         System.out.println("\nSean query 4");
                     } else if (queryNum == 5) {
@@ -466,4 +467,38 @@ public class QueryDriver {
             e.getMessage();
         }
     }
+    /* This function executes query 3 from project 2
+    *   
+    * @author Sean Malavet
+    * @param url the database url
+    * @param user the database username
+    * @param pass the database password
+    */
+    private static void executeQuery3(String url, String user, String pass) {
+        String query3 = "SELECT DISTINCT DE.dept_no, dept_name, AVG(salary), COUNT(CASE WHEN birth_date < '1950-01-01' and birth_date > '1939-12-31' then 1 END) as 'Born in 40s', COUNT(CASE WHEN birth_date < '1960-01-01' and birth_date > '1949-12-31' then 1 END) as 'Born in 50s', COUNT(CASE WHEN birth_date < '1970-01-01' and birth_date > '1959-12-31' then 1 END) as 'Born in 60s', COUNT(CASE WHEN birth_date < '1980-01-01' and birth_date > '1969-12-31' then 1 END) as 'Born in 70s' FROM  DEPT_EMP DE JOIN SALARIES S ON DE.emp_no = S.emp_no JOIN EMPLOYEES E ON DE.emp_no = E.emp_no JOIN DEPARTMENTS D ON DE.dept_no = D.dept_no GROUP BY DE.dept_no ORDER BY AVG(salary) DESC";
+        try(Connection connection = DriverManager.getConnection(url, user, pass)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query3);
+            while (resultSet.next()) {
+                String dept_no = resultSet.getString("dept_no");
+                String dept_name = resultSet.getString("dept_name");
+                String avg_salary = resultSet.getString("AVG(salary)");
+                String bornIn40s = resultSet.getString("Born in 40s");
+                String bornIn50s = resultSet.getString("Born in 50s");
+                String bornIn60s = resultSet.getString("Born in 60s");
+                String bornIn70s = resultSet.getString("Born in 70s");
+
+                System.out.println();
+                
+                System.out.print("dept_no: " + dept_no);
+                System.out.printf(", dept_name: %-22s", dept_name);
+                System.out.print("AVG(salary): " + avg_salary + ", Born in 40s: " + bornIn40s + ", Born in 50s: " + bornIn50s + ", Born in 60s: " + bornIn60s + ", Born in 70s: " + bornIn70s);
+
+            }
+            System.out.println();
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+
+}
 }
