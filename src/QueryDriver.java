@@ -469,7 +469,7 @@ public class QueryDriver {
             e.getMessage();
         }
     }
-    /* This function executes query 3 from project 2
+    /** This function executes query 3 from project 2
     *   
     * @author Sean Malavet
     * @param url the database url
@@ -503,7 +503,7 @@ public class QueryDriver {
         }
 
     }
-    /* This function executes query 4 from project 2
+    /** This function executes query 4 from project 2
     *   
     * @author Sean Malavet
     * @param url The url to the database
