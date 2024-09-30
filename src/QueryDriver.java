@@ -1,9 +1,9 @@
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.sql.PreparedStatement;
@@ -32,8 +32,14 @@ public class QueryDriver {
                 System.out.println("6. Find 2 degrees of separation between 2 given employees E1 & E2");
                 System.out.println("0. QUIT\n\n");
                 System.out.print("Enter # of query you would like to execute: ");
+                int queryNum = -1;
+                try {
+                    queryNum = in.nextInt();
+                } catch(InputMismatchException ime) {
+                    System.out.println("Not a # or Not a valid int 0-6");
+                }
 
-                int queryNum = in.nextInt();
+                
                 in.nextLine();
                     //in.nextLine();
                     if (queryNum == 0) {
@@ -469,7 +475,7 @@ public class QueryDriver {
             e.getMessage();
         }
     }
-    /* This function executes query 3 from project 2
+    /** This function executes query 3 from project 2
     *   
     * @author Sean Malavet
     * @param url the database url
@@ -503,7 +509,7 @@ public class QueryDriver {
         }
 
     }
-    /* This function executes query 4 from project 2
+    /** This function executes query 4 from project 2
     *   
     * @author Sean Malavet
     * @param url The url to the database
