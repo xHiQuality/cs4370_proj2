@@ -45,9 +45,11 @@ public class QueryDriver {
                         System.out.println();
                         executeQuery2(jdbcUrl,username,password);
                     } else if (queryNum == 3) {
+                        System.out.println();
                         executeQuery3(jdbcUrl,username,password);
                     } else if (queryNum == 4) {
-                        System.out.println("\nSean query 4");
+                        System.out.println();
+                        executeQuery4(jdbcUrl,username,password);
                     } else if (queryNum == 5) {
                         
                                 while (true) {
@@ -500,5 +502,47 @@ public class QueryDriver {
             e.getMessage();
         }
 
+    }
+    /* This function executes query 4 from project 2
+    *   
+    * @author Sean Malavet
+    * @param url The url to the database
+    * @param user the username for the database
+    * @param password the password for the database
+    *
+    */
+    private static void executeQuery4(String url, String user, String pass) {
+        String query4 = "SELECT DISTINCT first_name, last_name, gender, birth_date, salary, title, T.from_date, T.to_date FROM DEPT_MANAGER DM JOIN TITLES T ON DM.emp_no = T.emp_no and T.title LIKE '%Manager%' and T.to_date LIKE '9999%' JOIN EMPLOYEES E ON DM.emp_no = E.emp_no and E.gender = 'F' and E.birth_date < '1990-01-01' JOIN SALARIES S ON DM.emp_no = S.emp_no and S.to_date = T.to_date and S.salary > 80000";
+
+        try(Connection connection = DriverManager.getConnection(url, user, pass)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query4);
+
+            while (resultSet.next()) {
+                String first_name = resultSet.getString("first_name");
+                String last_name = resultSet.getString("last_name");
+                String gender = resultSet.getString("gender");
+                String birth_date = resultSet.getString("birth_date");
+                String salary = resultSet.getString("salary");
+                String title = resultSet.getString("title");
+                String from_date = resultSet.getString("from_date");
+                String to_date = resultSet.getString("to_date");
+
+
+                System.out.println();
+                System.out.printf("first_name: %-15s ", first_name);
+                System.out.printf("last_name: %-15s ", last_name);
+                System.out.printf("gender: %-2s ", gender);
+                System.out.printf("birth_date: %-12s ", birth_date);
+                System.out.printf("salary: %-8s ", salary);
+                System.out.printf("title: %-10s ", title);
+                System.out.printf("from_date: %-12s ", from_date);
+                System.out.printf("to_date: %-12s ", to_date);
+
+            }
+            System.out.println();
+        } catch (SQLException e) {
+            e.getMessage();
+        }
 }
 }
